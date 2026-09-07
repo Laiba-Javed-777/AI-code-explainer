@@ -14,7 +14,7 @@ export default function App() {
     setExplanation('');
 
     try {
-      const res = await fetch('http://localhost:5000/explain', {
+      const res = await fetch('/.netlify/functions/explain', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ language, code }),
