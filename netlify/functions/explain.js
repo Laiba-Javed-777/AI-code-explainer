@@ -1,6 +1,7 @@
 import Groq from 'groq-sdk';
 
 export const handler = async (event) => {
+  // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -13,18 +14,34 @@ export const handler = async (event) => {
     if (!apiKey) {
       return {
         statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ error: 'GROQ_API_KEY is missing in Netlify settings.' }),
       };
     }
 
     const { language, code } = JSON.parse(event.body || '{}');
+
+    if (!code) {
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Code snippet is required.' }),
+      };
+    }
+
     const groq = new Groq({ apiKey });
 
     const completion = await groq.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [
-        { role: 'system', content: 'You are a helpful coding tutor. Explain the code clearly.' },
-        { role: 'user', content: `Language: ${language || 'Auto-detect'}\n\nCode:\n${code}` },
+        {
+          role: 'system',
+          content: 'You are a helpful coding tutor. Explain the given code clearly and concisely.',
+        },
+        {
+          role: 'user',
+          content: `Language: ${language || 'Auto-detect'}\n\nCode:\n${code}`,
+        },
       ],
     });
 
