@@ -9,21 +9,21 @@ export const handler = async (event) => {
   }
 
   try {
-    const { language, code } = JSON.parse(event.body || '{}');
-
-    if (!code) {
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
       return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Code prompt is required' }),
+        statusCode: 500,
+        body: JSON.stringify({ error: 'GROQ_API_KEY is missing in Netlify settings.' }),
       };
     }
 
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const { language, code } = JSON.parse(event.body || '{}');
+    const groq = new Groq({ apiKey });
 
     const completion = await groq.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [
-        { role: 'system', content: 'You are a helpful coding tutor. Explain the given code clearly and concisely.' },
+        { role: 'system', content: 'You are a helpful coding tutor. Explain the code clearly.' },
         { role: 'user', content: `Language: ${language || 'Auto-detect'}\n\nCode:\n${code}` },
       ],
     });
