@@ -1,7 +1,6 @@
-import Groq from 'groq-sdk';
+const Groq = require('groq-sdk');
 
-export const handler = async (event) => {
-  // Only allow POST requests
+exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -15,7 +14,7 @@ export const handler = async (event) => {
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'GROQ_API_KEY is missing in Netlify settings.' }),
+        body: JSON.stringify({ error: 'GROQ_API_KEY environment variable is missing.' }),
       };
     }
 
@@ -25,7 +24,7 @@ export const handler = async (event) => {
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Code snippet is required.' }),
+        body: JSON.stringify({ error: 'Code prompt is required.' }),
       };
     }
 
