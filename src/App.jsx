@@ -14,11 +14,13 @@ export default function App() {
     setExplanation('');
 
     try {
-      const res = await fetch('/.netlify/functions/explain', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ language, code }),
-      });
+      const response = await fetch('https://YOUR-VERCEL-DOMAIN.vercel.app/api/explain', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ language, code }),
+});
       const data = await res.json();
       setExplanation(data.explanation || data.error);
     } catch (err) {
